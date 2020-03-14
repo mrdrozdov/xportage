@@ -49,7 +49,7 @@ class XPortageHome(object):
         tmp_dir = os.path.join(self.home, 'tmp')
         os.makedirs(tmp_dir, exist_ok=True)
 
-        target = os.path.join(tmp_dir, ref['target'])
+        target = os.path.join(self.home, ref['name'] + '.raw')
         if os.path.exists(target):
             print('Already downloaded.')
             return
@@ -58,7 +58,12 @@ class XPortageHome(object):
         os.system('cd {} && wget {}'.format(tmp_dir, ref['url']))
 
         # Unpack.
-        os.system('cd {} && {}'.format(tmp_dir, ref['unpack']))
+        my_tmp = 'my_tmp-{}'.format(ref['name'])
+        os.system('cd {} && {}'.format(tmp_dir, ref['unpack'].format(tmp=my_tmp)))
+
+        mv_from = os.path.join(tmp_dir, my_tmp)
+        mv_to = target
+        os.system('mv {} {}'.format(mv_from, mv_to))
 
         # Cleanup.
         os.system('cd {} && {}'.format(tmp_dir, ref['cleanup']))
@@ -68,14 +73,14 @@ class XPortageHome(object):
             assert ref is None, 'Should only specify one of ref or ref_name.'
             ref = self.get_ref(ref_name)
         print('Preprocessing ref with name {}.'.format(ref['name']))
-        tmp_dir = os.path.join(self.home, 'tmp')
-        out_dir = os.path.join(tmp_dir, ref['target'] + '.preprocess')
+        raw_dir = os.path.join(self.home, ref['name'] + '.raw')
+        out_dir = os.path.join(self.home, ref['name'] + '.preprocess')
         os.makedirs(out_dir, exist_ok=True)
 
         reader = get_reader_cls(ref['name'])()
 
         for x in ref['splits']:
-            path = os.path.join(tmp_dir, ref['target'], x['path'])
+            path = os.path.join(raw_dir, x['path'])
             dataset = reader.read(path)
 
             out_data = os.path.join(out_dir, '{}.data.jsonl'.format(x['name']))
