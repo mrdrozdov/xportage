@@ -1,4 +1,4 @@
-from xportage.reading.sst import SST
+from xportage.reading_raw.sst import SST
 
 
 def get_reader_cls(name):

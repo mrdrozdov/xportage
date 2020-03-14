@@ -2,7 +2,7 @@ import json
 import os
 
 from xportage.default_reference import reference as default_reference
-from xportage.reading.get_reader import get_reader_cls
+from xportage.reading_raw.get_reader import get_reader_cls
 
 
 class XPortageHome(object):

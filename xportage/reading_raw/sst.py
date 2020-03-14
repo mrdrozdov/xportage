@@ -1,7 +1,7 @@
 import nltk
 
-from xportage.reading.reader import DataReader
-import xportage.reading.tree_utils as tree_utils
+from xportage.reading_raw.reader import DataReader
+import xportage.utils.tree as tree_utils
 
 
 class SST(DataReader):
@@ -15,7 +15,9 @@ class SST(DataReader):
                 old_line = line[:]
                 line = line.replace(' 1\/2', '-1\/2')
                 if line != old_line:
-                    print(line, old_line)
+                    print('Warning: Changes made to data.')
+                    print('Before: {}'.format(old_line.strip()))
+                    print(' After: {}'.format(line.strip()))
                 tr = nltk.Tree.fromstring(line.strip())
                 words = tr.leaves()
                 spans = tree_utils.tree_to_spans_for_nltk(tr)
