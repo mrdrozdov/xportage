@@ -2,7 +2,7 @@ import json
 import os
 
 
-class PortageHome(object):
+class XPortageHome(object):
     def __init__(self, home, cfg):
         self.home = home
         self.cfg = cfg
@@ -16,7 +16,7 @@ class PortageHome(object):
                 f.write(json.dumps({}))
 
     def print_configuration(self):
-        log = 'PORTAGE CONFIGURATION\n'
+        log = 'XPORTAGE CONFIGURATION\n'
         log += '\n'
         log += '  HOME={}\n'.format(self.home)
         log += '  CFG={}\n'.format(self.cfg)

@@ -9,12 +9,12 @@ README = (HERE / "README.md").read_text()
 
 # This call to setup() does all the work
 setup(
-    name="portage",
-    version="0.0.0",
+    name="xportage",
+    version="0.0.1",
     description="Makes reading data easy.",
     long_description=README,
     long_description_content_type="text/markdown",
-    url="https://github.com/mrdrozdov/portage",
+    url="https://github.com/mrdrozdov/xportage",
     author="Andrew Drozdov",
     author_email="andrew@mrdrozdov.com",
     license="MIT",
@@ -23,12 +23,12 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["portage"],
+    packages=["xportage"],
     include_package_data=True,
     install_requires=[],
     entry_points={
         "console_scripts": [
-            "portage=portage.__main__:main",
+            "xportage=xportage.__main__:main",
         ]
     },
 )
