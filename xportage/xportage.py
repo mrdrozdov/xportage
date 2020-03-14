@@ -2,6 +2,7 @@ import json
 import os
 
 from xportage.default_reference import reference as default_reference
+from xportage.reading.get_reader import get_reader_cls
 
 
 class XPortageHome(object):
@@ -61,3 +62,38 @@ class XPortageHome(object):
 
         # Cleanup.
         os.system('cd {} && {}'.format(tmp_dir, ref['cleanup']))
+
+    def preprocess(self, ref=None, ref_name=None):
+        if ref_name is not None:
+            assert ref is None, 'Should only specify one of ref or ref_name.'
+            ref = self.get_ref(ref_name)
+        print('Preprocessing ref with name {}.'.format(ref['name']))
+        tmp_dir = os.path.join(self.home, 'tmp')
+        out_dir = os.path.join(tmp_dir, ref['target'] + '.preprocess')
+        os.makedirs(out_dir, exist_ok=True)
+
+        reader = get_reader_cls(ref['name'])()
+
+        for x in ref['splits']:
+            path = os.path.join(tmp_dir, ref['target'], x['path'])
+            dataset = reader.read(path)
+
+            out_data = os.path.join(out_dir, '{}.data.jsonl'.format(x['name']))
+            print('writing {}'.format(out_data))
+            with open(out_data, 'w') as f:
+                keys = list(dataset['data'].keys())
+                length = None
+                for k in keys:
+                    if length is None:
+                        length = len(dataset['data'][k])
+                    assert length == len(dataset['data'][k])
+                for i in range(length):
+                    ex = {}
+                    for k in keys:
+                        ex[k] = dataset['data'][k][i]
+                    f.write(json.dumps(ex, sort_keys=True) + '\n')
+
+            out_metadata = os.path.join(out_dir, '{}.metadata.json'.format(x['name']))
+            print('writing {}'.format(out_metadata))
+            with open(out_metadata, 'w') as f:
+                f.write(json.dumps(dataset['metadata'], sort_keys=True, indent=4))
