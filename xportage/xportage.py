@@ -1,29 +1,63 @@
 import json
 import os
 
+from xportage.default_reference import reference as default_reference
+
 
 class XPortageHome(object):
-    def __init__(self, home, cfg):
+    def __init__(self, home, cfg, force=False):
         self.home = home
-        self.cfg = cfg
-        self.setup_cfg(cfg)
+        self.cfg_path = cfg
+        self.cfg = self.setup_cfg(cfg, force=force)
 
-    def setup_cfg(self, cfg):
-        if not os.path.exists(cfg):
+    def setup_cfg(self, cfg, force=False):
+        if not os.path.exists(cfg) or force:
             print('Initializing config file at {}'.format(cfg))
             os.makedirs(os.path.dirname(cfg), exist_ok=True)
             with open(cfg, 'w') as f:
-                f.write(json.dumps({}))
+                cfg_data = {}
+                cfg_data['reference'] = default_reference
+                f.write(json.dumps(cfg_data, sort_keys=True, indent=4))
+
+        with open(cfg) as f:
+            return json.loads(f.read())
 
     def print_configuration(self):
         log = 'XPORTAGE CONFIGURATION\n'
         log += '\n'
         log += '  HOME={}\n'.format(self.home)
-        log += '  CFG={}\n'.format(self.cfg)
+        log += '  CFG={}\n'.format(self.cfg_path)
         print(log)
 
     def print_summary(self):
         directories = sorted([x for x in os.listdir(self.home) if os.path.isdir(os.path.join(self.home, x))])
 
+        print('HOME DIRECTORIES\n')
         for x in directories:
             print(x)
+        print('')
+
+    def get_ref(self, ref_name):
+        return self.cfg['reference']['sources'][ref_name]
+
+    def download(self, ref=None, ref_name=None):
+        if ref_name is not None:
+            assert ref is None, 'Should only specify one of ref or ref_name.'
+            ref = self.get_ref(ref_name)
+        print('Downloading ref with name {}.'.format(ref['name']))
+        tmp_dir = os.path.join(self.home, 'tmp')
+        os.makedirs(tmp_dir, exist_ok=True)
+
+        target = os.path.join(tmp_dir, ref['target'])
+        if os.path.exists(target):
+            print('Already downloaded.')
+            return
+
+        # Download.
+        os.system('cd {} && wget {}'.format(tmp_dir, ref['url']))
+
+        # Unpack.
+        os.system('cd {} && {}'.format(tmp_dir, ref['unpack']))
+
+        # Cleanup.
+        os.system('cd {} && {}'.format(tmp_dir, ref['cleanup']))
