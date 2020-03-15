@@ -23,7 +23,7 @@ class SST(DataReader):
                 spans = tree_utils.tree_to_spans_for_nltk(tr)
 
                 data.setdefault('example_id', []).append(sofar)
-                data.setdefault('sentences', []).append(words)
+                data.setdefault('sentence', []).append(words)
                 data.setdefault('labeled_spans', []).append(spans)
 
                 sofar += 1
