@@ -23,7 +23,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=find_packages(where='xportage'),
+    packages=find_packages(where='.'),
     include_package_data=True,
     install_requires=[
         "nltk"
