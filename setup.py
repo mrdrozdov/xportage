@@ -1,5 +1,5 @@
 import pathlib
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # The directory containing this file
 HERE = pathlib.Path(__file__).parent
@@ -23,9 +23,11 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.7",
     ],
-    packages=["xportage"],
+    packages=find_packages(where='xportage'),
     include_package_data=True,
-    install_requires=[],
+    install_requires=[
+        "nltk"
+    ],
     entry_points={
         "console_scripts": [
             "xportage=xportage.__main__:main",
